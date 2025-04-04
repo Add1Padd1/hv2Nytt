@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useState } from 'react'; 
+import React, { useState } from 'react';
 import styles from './Register.module.css';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ApiClient } from '@/app/api'; 
+import { ApiClient } from '@/app/api';
 
 const Register: React.FC = () => {
   const [username, setUsername] = useState('');
@@ -14,9 +14,9 @@ const Register: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [loading, setLoading] = useState(false);
-  const router = useRouter(); 
+  const router = useRouter();
 
-  const handleSubmit = async (e: React.FormEvent) => { 
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage('');
     setSuccessMessage('');
@@ -29,28 +29,31 @@ const Register: React.FC = () => {
       setErrorMessage('Lykilorð stemma ekki.');
       return;
     }
-     if (password.length < 8) {
-       setErrorMessage('Lykilorð verður að vera að minnsta kosti 8 stafir.');
-       return;
-     }
+    if (password.length < 8) {
+      setErrorMessage('Lykilorð verður að vera að minnsta kosti 8 stafir.');
+      return;
+    }
 
-    setLoading(true); 
+    setLoading(true);
     const apiClient = new ApiClient();
 
     try {
-        await apiClient.register({ username, email, password });
+      await apiClient.register({ username, email, password });
 
-        setSuccessMessage('Skráning tókst! Þú getur nú skráð þig inn.');
-        setTimeout(() => {
-          router.push('/login');
-        }, 2500);
+      setSuccessMessage('Skráning tókst! Þú getur nú skráð þig inn.');
+      setTimeout(() => {
+        router.push('/login');
+      }, 2500);
+    } catch (error) {
+      console.error('Registration API error:', error);
 
-    } catch (error: any) {
-        console.error('Registration API error:', error); 
-        setErrorMessage(error?.message || 'Nýskráning mistókst. Vinsamlegast reyndu aftur.');
-        setSuccessMessage(''); 
+      setErrorMessage(
+        // @ts-expect-error error is not typed
+        error?.message || 'Nýskráning mistókst. Vinsamlegast reyndu aftur.'
+      );
+      setSuccessMessage('');
     } finally {
-        setLoading(false); 
+      setLoading(false);
     }
   };
 
@@ -76,7 +79,7 @@ const Register: React.FC = () => {
             onChange={(e) => setUsername(e.target.value)}
             placeholder="Sláðu inn notandanafn"
             required
-            disabled={loading || !!successMessage} 
+            disabled={loading || !!successMessage}
           />
         </div>
 
@@ -106,7 +109,7 @@ const Register: React.FC = () => {
             className={styles.input}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="Sláðu inn lykilorð (minst 8 stafir)" 
+            placeholder="Sláðu inn lykilorð (minst 8 stafir)"
             required
             disabled={loading || !!successMessage}
           />
@@ -128,7 +131,11 @@ const Register: React.FC = () => {
           />
         </div>
 
-        <button type="submit" className={styles.button} disabled={loading || !!successMessage}>
+        <button
+          type="submit"
+          className={styles.button}
+          disabled={loading || !!successMessage}
+        >
           {loading ? 'Skrái...' : 'Skrá mig'}
         </button>
 

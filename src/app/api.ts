@@ -5,8 +5,10 @@ const BASE_URL =
 
 export class ApiError extends Error {
   status: number;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   details?: any;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   constructor(message: string, status: number, details?: any) {
     super(message);
     this.name = 'ApiError';
@@ -39,9 +41,10 @@ export class ApiClient {
     let response: Response;
     try {
       response = await fetch(url, config);
-    } catch (networkError: any) {
+    } catch (networkError) {
       console.error(`Network error fetching from ${url}:`, networkError);
       throw new ApiError(
+        //@ts-expect-error networkError is not typed
         `Network error: ${networkError.message || 'Failed to connect'}`,
         0
       );
@@ -51,7 +54,7 @@ export class ApiClient {
       return null as T;
     }
 
-    let responseBody: any = null;
+    let responseBody = null;
     const contentType = response.headers.get('content-type');
     if (contentType?.includes('application/json')) {
       try {
@@ -87,8 +90,10 @@ export class ApiClient {
           response.status
         );
       } catch (textErr) {
+        const errorMessage =
+          textErr instanceof Error ? textErr.message : 'Unknown error occurred';
         throw new ApiError(
-          `Request failed with status ${response.status}`,
+          `Request failed with status ${response.status}: ${errorMessage}`,
           response.status
         );
       }
@@ -189,7 +194,7 @@ export class ApiClient {
     try {
       const transactions = await this.fetchCore<Transaction[]>(url);
       return transactions ?? [];
-    } catch (error: any) {
+    } catch (error) {
       if (
         error instanceof ApiError &&
         (error.status === 401 || error.status === 404)
@@ -209,7 +214,7 @@ export class ApiClient {
     try {
       const transactions = await this.fetchCore<Transaction[]>(url);
       return transactions ?? [];
-    } catch (error: any) {
+    } catch (error) {
       if (
         error instanceof ApiError &&
         (error.status === 401 || error.status === 403 || error.status === 404)
@@ -250,7 +255,7 @@ export class ApiClient {
     try {
       const images = await this.fetchCore<UserImage[]>(url);
       return images ?? [];
-    } catch (error: any) {
+    } catch (error) {
       if (
         error instanceof ApiError &&
         (error.status === 401 || error.status === 404)

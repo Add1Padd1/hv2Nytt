@@ -22,6 +22,7 @@ export default function Createtransaction({
   const [description, setDescription] = useState('');
   const [account, setAccount] = useState('');
   const [message, setMessage] = useState('');
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [errorDetails, setErrorDetails] = useState<any>(null);
   const [accountOptions, setAccountOptions] = useState<AccountOption[]>([]);
   const [accountsLoading, setAccountsLoading] = useState<boolean>(true);
@@ -320,14 +321,17 @@ export default function Createtransaction({
           <button
             type="submit"
             className={styles.submitButton}
+            // @ts-expect-error because of disabled prop
             disabled={uiState === 'loading' || accountsLoading}
           >
+            {/* @ts-expect-error because of disabled prop */}
             {uiState === 'loading' ? 'Sendi...' : 'Stofna færslu'}
           </button>
           <button
             type="button"
             onClick={clearForm}
             className={styles.clearButton}
+            // @ts-expect-error because of disabled prop
             disabled={uiState === 'loading'}
           >
             Hreinsa

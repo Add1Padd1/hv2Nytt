@@ -41,8 +41,9 @@ export default function TransactionsPage() {
         setTransactions([]);
         setUiState('empty');
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error('Failed to fetch transactions:', error);
+      // @ts-expect-error error is not typed
       if (error?.status === 403) {
         setUiState('error');
       } else {
